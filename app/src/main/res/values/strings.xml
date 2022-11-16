@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">PlantTamagochi</string>
+    <string name="app_name">PLantTamagochi</string>
+
+    <!-- Log in -->
+    <string name="hint_user">Usuario...</string>
+    <string name="hint_password">Contraseña...</string>
+
+    <!-- Errors -->
+    <string name="field_required">No puede estar vacío...</string>
+
 </resources>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "171935536456",
+    "firebase_url": "https://planttamagochi-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "planttamagochi",
+    "storage_bucket": "planttamagochi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171935536456:android:8b11e50b9b16b7c59f8f7d",
+        "android_client_info": {
+          "package_name": "es.upm.miw.planttamagochi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "171935536456-8i1mbuv88elfhc76hntll4fslg9715t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5DpWoo_KDIy1zxWqYHFAs_DjYKsarZf4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "171935536456-8i1mbuv88elfhc76hntll4fslg9715t9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
