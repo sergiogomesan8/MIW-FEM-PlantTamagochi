@@ -1,5 +1,6 @@
 package es.upm.miw.planttamagochi;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -83,6 +84,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Create EmailAuthCredential with email and password
         AuthCredential credential = EmailAuthProvider.getCredential(user, password);
+        Intent intent = new Intent(this, MainActivity.class);
 
         // [START signin_with_email_and_password]
         Auth.signInWithCredential(credential)
@@ -95,6 +97,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Toast.makeText(LoginActivity.this, "Authentication correct: " + user,
                                     Toast.LENGTH_SHORT).show();
                             FirebaseUser user = Auth.getCurrentUser();
+
+                            startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(LOG_TAG, "signInWithCredentials:failure", task.getException());
