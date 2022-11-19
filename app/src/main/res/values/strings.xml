@@ -18,5 +18,9 @@
     <!-- Main -->
     <string name="txtSaludo">Hola, Sergio!</string>
     <string name="txtPregunta">¿Qué quieres hacer hoy?</string>
+    <string name="txtTransportarPlanta">Comprueba la ciudad a la que es más conveniente llevar tu planta</string>
+    <string name="txtVerPlanta">Podrás conocer los valores de humedad, temperatura, Co2… de tu planta</string>
+    <string name="btnTransportarPlanta">Transportar Planta</string>
+    <string name="btnVerPlanta">Ver Planta</string>
 
 </resources>

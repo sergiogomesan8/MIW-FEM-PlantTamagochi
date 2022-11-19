@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import es.upm.miw.planttamagochi.device.ISpikeRESTAPIService;
@@ -18,15 +19,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     static String LOG_TAG = "btb";
     public static final int NEW_ACTIVITY_REQUEST_CODE = 2022;
 
     private static final String API_LOGIN_POST = "https://thingsboard.cloud/api/auth/"; // Base url to obtain token
     private static final String API_BASE_GET = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/"; // Base url to obtain data
-    private static final String TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY3MDQxMTkzLCJleHAiOjE2NjcwNjk5OTMsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.iHv2Ql_WD9Qmw3aggrtOX3sXjdaz2ms4V7vv6ogBUO9VT_5aabxwJEGqXrggFtW9VMhCE70EDRfDXyRVXv43Ag";
-    private static final String BEARER_TOKEN = "Bearer " + TOKEN;
+    //private static final String TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4ODQ4NTUyLCJleHAiOjE2Njg4NzczNTIsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.DLYNMLG9Yo3zHzf1WNTroykSGayDOPHbHkAK9iVyQqhHoWVW-FRx-to2N20ZaAnl4ScNEMCK0a0HrEfgVjvfGA";
+    private static final String BEARER = "Bearer ";
     private static final String DEVICE_ID = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
     private static final String USER_THB = "studentupm2022@gmail.com";
     private static final String PASS_THB = "student";
@@ -41,7 +42,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.postBearerToken();
-        this.getLastTelemetry();
+        //this.getLastTelemetry();
+
+        //Click Listeners
+        findViewById(R.id.buttonVer).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.buttonVer) {
+            this.getLastTelemetry();
+        }
     }
 
 
@@ -68,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<AuthorizationBearer> call, Response<AuthorizationBearer> response) {
                 Toast.makeText(MainActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 AuthorizationBearer responseFromAPI = response.body();
-                String responseString = "Response Code : " + response.code() + "\nToken : " + responseFromAPI.getToken() + "\n" + "RefreshToken : " + responseFromAPI.getRefreshToken();
+                String responseString = "Response postBearerToken() Code : " + response.code() + "\nToken : " + responseFromAPI.getToken() + "\n" + "RefreshToken : " + responseFromAPI.getRefreshToken();
                 Log.i(LOG_TAG, " response: "+responseString);
                 sAuthBearerToken = responseFromAPI.getToken();
                 Log.i(LOG_TAG, " granted AuthBearerToken: "+sAuthBearerToken);
@@ -80,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void getLastTelemetry() {
         //https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/{{deviceId}}/values/timeseries?keys=co2&useStrictDataTypes=false
@@ -99,8 +113,8 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
-        Log.i(LOG_TAG, " request params: |"+ BEARER_TOKEN +"|"+ DEVICE_ID +"|"+keys+"|"+useStrictDataTypes);
-        Call<Measurement> call = iApi.getLastTelemetry(BEARER_TOKEN, DEVICE_ID, keys, useStrictDataTypes);
+        Log.i(LOG_TAG, " request params: |"+ BEARER + sAuthBearerToken + "|"+ DEVICE_ID +"|"+keys+"|"+useStrictDataTypes);
+        Call<Measurement> call = iApi.getLastTelemetry(BEARER + sAuthBearerToken, DEVICE_ID, keys, useStrictDataTypes);
 
 
         call.enqueue(new Callback<Measurement>() {
@@ -109,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 Measurement lm = response.body();
 
-                String responseString = "Response Code : " + response.code();
+                String responseString = "Response getLastTelemetry() Code : " + response.code();
                 Log.i(LOG_TAG, " response: "+responseString);
                 Log.i(LOG_TAG, " response.body: "+lm.getCo2().get(0).getValue());
             }
