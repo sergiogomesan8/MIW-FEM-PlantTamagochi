@@ -1,11 +1,22 @@
 <resources>
-    <string name="app_name">PLantTamagochi</string>
+    <string name="app_name">PlantTamagochi</string>
 
     <!-- Log in -->
-    <string name="hint_user">Usuario...</string>
-    <string name="hint_password">Contraseña...</string>
+    <string name="hint_user">Usuario…</string>
+    <string name="hint_password">Contraseña…</string>
+    <string name="log_in">Log in</string>
 
     <!-- Errors -->
-    <string name="field_required">No puede estar vacío...</string>
+    <string name="field_required">No puede estar vacío…</string>
+
+    <!-- Opciones Menu -->
+    <string name="txtOpcHistorico">Histórico</string>
+    <string name="txtAboutText">Acerca de</string>
+    <string name="txtPreferences">Preferencias</string>
+    <string name="txtAjustes">Ajustes</string>
+
+    <!-- Main -->
+    <string name="txtSaludo">Hola, Sergio!</string>
+    <string name="txtPregunta">¿Qué quieres hacer hoy?</string>
 
 </resources>
