@@ -1,13 +1,24 @@
 package es.upm.miw.planttamagochi;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import es.upm.miw.planttamagochi.device.ISpikeRESTAPIService;
+import es.upm.miw.planttamagochi.fragments.Perfil;
+import es.upm.miw.planttamagochi.model.PlantTamagochiModel;
 import es.upm.miw.planttamagochi.pojo.AuthorizationBearer;
 import es.upm.miw.planttamagochi.pojo.Credentials;
 import es.upm.miw.planttamagochi.pojo.Measurement;
@@ -36,10 +47,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String sAuthBearerToken ="";
 
+    PlantTamagochiModel plantTamagochiVM;
+    FirebaseAuth Auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        plantTamagochiVM = new ViewModelProvider(this).get(PlantTamagochiModel.class);
+        Auth = FirebaseAuth.getInstance();
+        //firebaseUser = plantTamagochiVM.getCurrentUser();
+        //this.crearObservadores();
 
         this.postBearerToken();
         //this.getLastTelemetry();
@@ -48,12 +66,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.buttonVer).setOnClickListener(this);
     }
 
+
     @Override
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.buttonVer) {
             this.getLastTelemetry();
         }
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.opciones_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.opc_perfil:
+                Perfil perfilDialog = new Perfil();
+                perfilDialog.show(getSupportFragmentManager(), "frgPerfilDialog");
+                return true;
+
+            default:
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        getString(R.string.txtNoAcceso),
+                        Snackbar.LENGTH_LONG
+                ).show();
+        }
+        return true;
     }
 
 
@@ -134,5 +177,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+    }
+
+    public void logOut(){
+        Auth = this.plantTamagochiVM.getAuth().getValue();
+        Auth.signOut();
+        plantTamagochiVM.setAuth(Auth);
+
+        Log.i(LOG_TAG, "Log Out: success");
+        Toast.makeText(MainActivity.this, "Log Out correct: ",
+                Toast.LENGTH_SHORT).show();
     }
 }

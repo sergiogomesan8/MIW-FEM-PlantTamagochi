@@ -14,6 +14,12 @@
     <string name="txtAboutText">Acerca de</string>
     <string name="txtPreferences">Preferencias</string>
     <string name="txtAjustes">Ajustes</string>
+    <string name="txtNoAcceso">No tienes acceso</string>
+    <string name="perfil">Perfil</string>
+    <string name="txtOpcCerrarSesion">¿Estás seguro que quieres cerrar sesión?</string>
+    <string name="txtYesDialog">Si</string>
+    <string name="txtNoDialog">No</string>
+    <string name="txtOpcTituloCerrarSesion">Perfil: Cerrar Sesión</string>
 
     <!-- Main -->
     <string name="txtSaludo">Hola, Sergio!</string>
@@ -22,5 +28,7 @@
     <string name="txtVerPlanta">Podrás conocer los valores de humedad, temperatura, Co2… de tu planta</string>
     <string name="btnTransportarPlanta">Transportar Planta</string>
     <string name="btnVerPlanta">Ver Planta</string>
+    <string name="CerrarSesion">Cerrar Sesión</string>
+
 
 </resources>
