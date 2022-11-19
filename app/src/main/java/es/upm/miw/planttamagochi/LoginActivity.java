@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,9 +20,13 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import es.upm.miw.planttamagochi.model.PlantTamagochiModel;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String LOG_TAG = "Auth";
+
+    private PlantTamagochiModel plantTamagochiVM;
 
     private FirebaseAuth Auth;
 
@@ -32,6 +37,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        plantTamagochiVM = new ViewModelProvider(this).get(PlantTamagochiModel.class);
 
         //Fields
         etUser = findViewById(R.id.fieldUser);
@@ -94,24 +101,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.i(LOG_TAG, "signInWithCredentials:success");
-                            Toast.makeText(LoginActivity.this, "Authentication correct: " + user,
-                                    Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = Auth.getCurrentUser();
 
+                            FirebaseUser firebaseUser = Auth.getCurrentUser();
+                            Toast.makeText(LoginActivity.this, "Authentication correct: " + firebaseUser,
+                                    Toast.LENGTH_SHORT).show();
+                            plantTamagochiVM.setAuth(Auth);
                             startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(LOG_TAG, "signInWithCredentials:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
+                            plantTamagochiVM.setAuth(Auth);
                         }
                     }
                 });
         // [END signin_with_email_and_password]
-    }
-
-    private void signOut() {
-        Auth.signOut();
     }
 
 

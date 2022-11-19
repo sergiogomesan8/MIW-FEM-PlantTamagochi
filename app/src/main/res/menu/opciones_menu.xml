@@ -3,21 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/opcHistorico"
-        android:title="@string/txtOpcHistorico"
-        android:orderInCategory="20"
-        />
-    <item
-        android:id="@+id/opcAjustes"
-        android:title="@string/txtAjustes"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:orderInCategory="100"
-        />
-    <item
-        android:id="@+id/opcPreferences"
-        android:title="@string/txtPreferences"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:orderInCategory="100"
+        android:id="@+id/opc_perfil"
+        android:title="@string/perfil"
+        android:icon="@drawable/perfil_img"
+        android:orderInCategory="5"
+        app:showAsAction="ifRoom|withText"
         />
     <item
         android:id="@+id/opcAcercaDe"
