@@ -15,13 +15,28 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import es.upm.miw.planttamagochi.device.ISpikeRESTAPIService;
 import es.upm.miw.planttamagochi.fragments.Perfil;
 import es.upm.miw.planttamagochi.model.PlantTamagochiModel;
 import es.upm.miw.planttamagochi.pojo.AuthorizationBearer;
+import es.upm.miw.planttamagochi.pojo.Co2;
 import es.upm.miw.planttamagochi.pojo.Credentials;
+import es.upm.miw.planttamagochi.pojo.Humidity;
+import es.upm.miw.planttamagochi.pojo.Light;
 import es.upm.miw.planttamagochi.pojo.Measurement;
+import es.upm.miw.planttamagochi.pojo.SoilTemp1;
+import es.upm.miw.planttamagochi.pojo.SoilTemp2;
+import es.upm.miw.planttamagochi.pojo.Temperature;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -30,7 +45,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     static String LOG_TAG = "btb";
     public static final int NEW_ACTIVITY_REQUEST_CODE = 2022;
@@ -42,25 +57,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String DEVICE_ID = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
     private static final String USER_THB = "studentupm2022@gmail.com";
     private static final String PASS_THB = "student";
+    private static final Integer ERROR_CODE = 401;
 
     private ISpikeRESTAPIService apiService;
 
-    private String sAuthBearerToken ="";
+    private String sAuthBearerToken = "";
 
     PlantTamagochiModel plantTamagochiVM;
     FirebaseAuth Auth;
+    FirebaseDatabase database;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         plantTamagochiVM = new ViewModelProvider(this).get(PlantTamagochiModel.class);
+
         Auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
         //firebaseUser = plantTamagochiVM.getCurrentUser();
-        //this.crearObservadores();
 
         this.postBearerToken();
-        //this.getLastTelemetry();
 
         //Click Listeners
         findViewById(R.id.buttonVer).setOnClickListener(this);
@@ -74,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             this.getLastTelemetry();
         }
     }
+
 
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -115,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .build();
 
         ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
-        Credentials c = new Credentials("studentupm2022@gmail.com","student");
+        Credentials c = new Credentials("studentupm2022@gmail.com", "student");
         Call<AuthorizationBearer> call = iApi.postAuthorizationBearer(c);
 
         call.enqueue(new Callback<AuthorizationBearer>() {
@@ -124,21 +144,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(MainActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 AuthorizationBearer responseFromAPI = response.body();
                 String responseString = "Response postBearerToken() Code : " + response.code() + "\nToken : " + responseFromAPI.getToken() + "\n" + "RefreshToken : " + responseFromAPI.getRefreshToken();
-                Log.i(LOG_TAG, " response: "+responseString);
+                Log.i(LOG_TAG, " response: " + responseString);
                 sAuthBearerToken = responseFromAPI.getToken();
-                Log.i(LOG_TAG, " granted AuthBearerToken: "+sAuthBearerToken);
+                Log.i(LOG_TAG, " granted AuthBearerToken: " + sAuthBearerToken);
             }
 
             @Override
             public void onFailure(Call<AuthorizationBearer> call, Throwable t) {
-                Log.e(LOG_TAG, " error message: "+t.getMessage());
+                Log.e(LOG_TAG, " error message: " + t.getMessage());
             }
         });
     }
 
 
-
     private void getLastTelemetry() {
+
+        this.postBearerToken();
+
         //https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/{{deviceId}}/values/timeseries?keys=co2&useStrictDataTypes=false
         String keys = "co2,humidity,light,soilTemp1,soilTemp2,temperature";
         String useStrictDataTypes = "false";
@@ -156,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .build();
 
         ISpikeRESTAPIService iApi = retrofit.create(ISpikeRESTAPIService.class);
-        Log.i(LOG_TAG, " request params: |"+ BEARER + sAuthBearerToken + "|"+ DEVICE_ID +"|"+keys+"|"+useStrictDataTypes);
+        Log.i(LOG_TAG, " request params: |" + BEARER + sAuthBearerToken + "|" + DEVICE_ID + "|" + keys + "|" + useStrictDataTypes);
         Call<Measurement> call = iApi.getLastTelemetry(BEARER + sAuthBearerToken, DEVICE_ID, keys, useStrictDataTypes);
 
 
@@ -166,20 +188,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(MainActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 Measurement lm = response.body();
 
+                if (lm == null) {
+                    Log.i(LOG_TAG, " API returned empty values for measurement");
+                } else {
+
+                    Date date = new Date();
+                    DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                    DateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
+
+                    List<Co2> lCo2 = lm.getCo2();
+                    List<Humidity> lHum = lm.getHumidity();
+                    List<Light> lLig = lm.getLight();
+                    List<SoilTemp1> lST1 = lm.getSoilTemp1();
+                    List<SoilTemp2> lST2 = lm.getSoilTemp2();
+                    List<Temperature> lTem = lm.getTemperature();
+
+                    DatabaseReference myRef = database.getReference("keys_api_plant" + " | " + dateFormat.format(date) + " | " + hourFormat.format(date));
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("Co2", lCo2.get(0).getValue());
+                    m.put("Hum", lHum.get(0).getValue());
+                    m.put("Light", lLig.get(0).getValue());
+                    m.put("SoilTemp1", lST1.get(0).getValue());
+                    m.put("SoilTemp2", lST2.get(0).getValue());
+                    m.put("Temp", lTem.get(0).getValue());
+                    myRef.setValue(m);
+                }
+
                 String responseString = "Response getLastTelemetry() Code : " + response.code();
-                Log.i(LOG_TAG, " response: "+responseString);
-                Log.i(LOG_TAG, " response.body: "+lm.getCo2().get(0).getValue());
+                Log.i(LOG_TAG, " response: " + responseString);
+                Log.i(LOG_TAG, " response.body: " + lm.getCo2().get(0).getValue());
             }
 
             @Override
             public void onFailure(Call<Measurement> call, Throwable t) {
-                Log.e(LOG_TAG, " error message: "+t.getMessage());
+                Log.e(LOG_TAG, " error message: " + t.getMessage());
             }
         });
 
     }
 
-    public void logOut(){
+    public void logOut() {
         Auth = this.plantTamagochiVM.getAuth().getValue();
         Auth.signOut();
         plantTamagochiVM.setAuth(Auth);
