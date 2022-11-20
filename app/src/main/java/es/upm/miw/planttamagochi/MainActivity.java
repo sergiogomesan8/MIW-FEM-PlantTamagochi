@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import es.upm.miw.planttamagochi.device.ISpikeRESTAPIService;
+import es.upm.miw.planttamagochi.firebase.Firebase;
 import es.upm.miw.planttamagochi.fragments.Perfil;
 import es.upm.miw.planttamagochi.model.PlantTamagochiModel;
 import es.upm.miw.planttamagochi.pojo.AuthorizationBearer;
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     PlantTamagochiModel plantTamagochiVM;
     FirebaseAuth Auth;
     FirebaseDatabase database;
-
+    Firebase firebase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +76,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         plantTamagochiVM = new ViewModelProvider(this).get(PlantTamagochiModel.class);
 
-        Auth = FirebaseAuth.getInstance();
+        firebase = new Firebase(plantTamagochiVM);
         database = FirebaseDatabase.getInstance();
         //firebaseUser = plantTamagochiVM.getCurrentUser();
+
+        this.crearObservadores();
 
         this.postBearerToken();
 
@@ -92,6 +95,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (i == R.id.buttonVer) {
             this.getLastTelemetry();
         }
+    }
+
+
+    private void crearObservadores() {
+        plantTamagochiVM.getAuth().observe(
+                this,
+                new Observer<FirebaseAuth>() {
+                    @Override
+                    public void onChanged(FirebaseAuth firebaseAuth) {
+                        marcarAuth(firebase.getFirebaseAuth());
+                    }
+                }
+        );
+    }
+
+    private void marcarAuth(FirebaseAuth auth) {
+        this.Auth = auth;
     }
 
 
@@ -228,12 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void logOut() {
-        Auth = this.plantTamagochiVM.getAuth().getValue();
         Auth.signOut();
-        plantTamagochiVM.setAuth(Auth);
-
-        Log.i(LOG_TAG, "Log Out: success");
-        Toast.makeText(MainActivity.this, "Log Out correct: ",
-                Toast.LENGTH_SHORT).show();
+        firebase.setFirebaseAuth(Auth);
     }
 }
