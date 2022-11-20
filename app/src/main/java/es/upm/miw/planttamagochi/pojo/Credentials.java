@@ -1,3 +1,4 @@
+
 package es.upm.miw.planttamagochi.pojo;
 
 import com.google.gson.annotations.Expose;
