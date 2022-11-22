@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import es.upm.miw.planttamagochi.service.device.ISpikeRESTAPIService;
-import es.upm.miw.planttamagochi.firebase.Firebase;
 import es.upm.miw.planttamagochi.fragments.Perfil;
 import es.upm.miw.planttamagochi.model.PlantTamagochiModel;
 import es.upm.miw.planttamagochi.pojo.AuthorizationBearer;
@@ -69,8 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     PlantTamagochiModel plantTamagochiVM;
     FirebaseAuth Auth;
     FirebaseDatabase database;
-    Firebase firebase;
-    FirebaseUser firebaseUser;
+    String firebaseUser;
     TextView txtsaludo;
 
     @Override
@@ -80,14 +77,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         plantTamagochiVM = new ViewModelProvider(this).get(PlantTamagochiModel.class);
 
-        firebase = new Firebase(plantTamagochiVM);
         database = FirebaseDatabase.getInstance();
 
         this.crearObservadores();
         this.postBearerToken();
 
-        firebaseUser = firebase.getFirebaseUser();
-        txtsaludo = (TextView)findViewById(R.id.txtsaludo);
+        firebaseUser = getIntent().getStringExtra("usuario");
+
+        txtsaludo = (TextView) findViewById(R.id.txtsaludo);
         txtsaludo.setText("Hola, " + firebaseUser);
 
         //Click Listeners
@@ -112,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new Observer<FirebaseAuth>() {
                     @Override
                     public void onChanged(FirebaseAuth firebaseAuth) {
-                        marcarAuth(firebase.getFirebaseAuth());
+                        marcarAuth(firebaseAuth);
                     }
                 }
         );
@@ -120,9 +117,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void marcarAuth(FirebaseAuth auth) {
         this.Auth = auth;
-    }
-    private void marcarUser(FirebaseUser user){
-        this.firebaseUser = user;
     }
 
 
@@ -260,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void logOut() {
         Auth.signOut();
-        firebase.setFirebaseAuth(Auth);
+        plantTamagochiVM.setAuth(Auth);
     }
 
 }

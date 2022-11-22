@@ -2,6 +2,7 @@ package es.upm.miw.planttamagochi;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,9 +25,9 @@ public class TransportarPlantaActivity extends AppCompatActivity implements View
     private Spinner spinner;
 
     private String[] ciudades = {"", "Madrid", "Barcelona", "Salamanca", "London"};
-    private String[] recomendacion = {  "Es un lugar ideal, la planta se mantendrá correctamente",
-                                        "Si lleva la planta tendrá que tener en cuenta alguna clave",
-                                        "¡NO lleve la planta!, o sufrirá daños"};
+    private String[] recomendacion = {"Es un lugar ideal, la planta se mantendrá correctamente",
+            "Si lleva la planta tendrá que tener en cuenta alguna clave",
+            "¡NO lleve la planta!, o sufrirá daños"};
 
     LoadOpenWeatherTask openWeatherTask;
     private String ciudad = "";
@@ -40,20 +41,22 @@ public class TransportarPlantaActivity extends AppCompatActivity implements View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transportar_planta);
 
-        ArrayAdapter <String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ciudades);
-        spinner = (Spinner)findViewById(R.id.spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ciudades);
+        spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setAdapter(adapter);
 
-        txtCiudad = (TextView)findViewById(R.id.txtCiudad);
-        txtRecomendacion = (TextView)findViewById(R.id.txtRecomendacion);
+        txtCiudad = (TextView) findViewById(R.id.txtCiudad);
+        txtRecomendacion = (TextView) findViewById(R.id.txtRecomendacion);
 
-        imagenRecomendacion = (ImageView)findViewById(R.id.imagenRecomendacion);
+        imagenRecomendacion = (ImageView) findViewById(R.id.imagenRecomendacion);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 ciudad = spinner.getSelectedItem().toString();
                 txtCiudad.setText(ciudad);
+                imagenRecomendacion.setImageResource(0);
+                txtRecomendacion.setText("");
             }
 
             @Override
@@ -71,17 +74,17 @@ public class TransportarPlantaActivity extends AppCompatActivity implements View
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.buttonComprobar) {
-            if(ciudad!=""){
+            if (ciudad != "") {
                 this.loadOpenWeatherTask();
-            }
-            else{
+            } else {
                 Toast.makeText(TransportarPlantaActivity.this, "Selecciona antes una ciudad", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
 
-    protected void loadOpenWeatherTask(){
+    @SuppressLint("ResourceAsColor")
+    protected void loadOpenWeatherTask() {
         openWeatherTask = new LoadOpenWeatherTask();
         try {
             recursoOpenWeather = openWeatherTask.execute(ciudad).get();
@@ -92,37 +95,26 @@ public class TransportarPlantaActivity extends AppCompatActivity implements View
 
             Log.e(LOG_TAG, "Valor temperatura: " + temp);
 
-            if((temp > 20.0) && (temp < 25.0)){
-                if(recursoOpenWeather.getMain().getHumidity() > 40){
+            if ((temp > 18.0) && (temp < 25.0)) {
+                if ((recursoOpenWeather.getMain().getHumidity() > 80) && (recursoOpenWeather.getMain().getHumidity() < 85)) {
                     imagenRecomendacion.setImageResource(R.drawable.tamagochi_happy);
-                    imagenRecomendacion.setBackgroundColor(Integer.parseInt(String.valueOf(R.color.green)));
-                    txtRecomendacion.setText(recomendacion[0]);
-                    txtRecomendacion.setBackgroundColor(Integer.parseInt(String.valueOf(R.color.green)));
-                }
-                else{
-                    imagenRecomendacion.setImageResource(R.drawable.tamagochi_happy);
-                    imagenRecomendacion.setBackgroundColor(Integer.parseInt(String.valueOf(R.color.ambar)));
                     txtRecomendacion.setText(recomendacion[1]);
-                    txtRecomendacion.setBackgroundColor(Integer.parseInt(String.valueOf(R.color.ambar)));
+                } else {
+                    imagenRecomendacion.setImageResource(R.drawable.tamagochi_normal);
+                    txtRecomendacion.setText(recomendacion[0]);
                 }
-            }
-            else{
+            } else {
                 imagenRecomendacion.setImageResource(R.drawable.tamagochi_sad);
-                imagenRecomendacion.setBackgroundColor(Integer.parseInt(String.valueOf(R.color.red)));
                 txtRecomendacion.setText(recomendacion[2]);
-                txtRecomendacion.setBackgroundColor(Integer.parseInt(String.valueOf(R.color.red)));
             }
 
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
 
-    protected double celsiusToCentigrades(double temp){
-        return temp-273.15;
+    protected double celsiusToCentigrades(double temp) {
+        return temp - 273.15;
     }
 
     @Override

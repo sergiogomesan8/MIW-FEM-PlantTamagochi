@@ -20,9 +20,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 
-import es.upm.miw.planttamagochi.firebase.Firebase;
 import es.upm.miw.planttamagochi.model.PlantTamagochiModel;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -105,18 +103,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.i(LOG_TAG, "signInWithCredentials:success");
-                            plantTamagochiVM.setAuth(Auth);
 
                             FirebaseUser firebaseUser = Auth.getCurrentUser();
-                            Toast.makeText(LoginActivity.this, "Authentication correct: " + firebaseUser,
+                            Toast.makeText(LoginActivity.this, "Authentication correct: " + firebaseUser.getEmail(),
                                     Toast.LENGTH_SHORT).show();
+
+                            intent.putExtra("usuario", firebaseUser.getEmail());
                             startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(LOG_TAG, "signInWithCredentials:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
-                            plantTamagochiVM.setAuth(Auth);
                         }
                     }
                 });
