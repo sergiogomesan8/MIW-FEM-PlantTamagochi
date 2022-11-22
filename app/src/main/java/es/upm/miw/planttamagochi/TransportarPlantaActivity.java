@@ -24,9 +24,12 @@ public class TransportarPlantaActivity extends AppCompatActivity implements View
 
     private Spinner spinner;
 
-    private String[] ciudades = {"", "Madrid", "Barcelona", "Salamanca", "London"};
+    private String[] ciudades = {"", "Madrid", "Barcelona", "Salamanca", "Sevilla",
+            "Manchester", "London" ,"Brasília", "Cairo", "California", "Jhānsi", "Stuttgart"};
+
     private String[] recomendacion = {"Es un lugar ideal, la planta se mantendrá correctamente",
-            "Si lleva la planta tendrá que tener en cuenta alguna clave",
+            "Cuidado!, si lleva la planta tendrá que tener en cuenta la temperatura",
+            "Bien, pero si lleva la planta tendrá que tener en cuenta la humedad",
             "¡NO lleve la planta!, o sufrirá daños"};
 
     LoadOpenWeatherTask openWeatherTask;
@@ -86,26 +89,34 @@ public class TransportarPlantaActivity extends AppCompatActivity implements View
     @SuppressLint("ResourceAsColor")
     protected void loadOpenWeatherTask() {
         openWeatherTask = new LoadOpenWeatherTask();
+
         try {
             recursoOpenWeather = openWeatherTask.execute(ciudad).get();
-            //Log.e(LOG_TAG, "Valor temperatura: " + recursoOpenWeather.getName());
 
-            Double temp = recursoOpenWeather.getMain().getTemp();
-            temp = this.celsiusToCentigrades(temp);
+            Double tempCiudad = recursoOpenWeather.getMain().getTemp();
+            tempCiudad = this.celsiusToCentigrades(tempCiudad);
 
-            Log.e(LOG_TAG, "Valor temperatura: " + temp);
+            int humidity = recursoOpenWeather.getMain().getHumidity();
 
-            if ((temp > 18.0) && (temp < 25.0)) {
-                if ((recursoOpenWeather.getMain().getHumidity() > 80) && (recursoOpenWeather.getMain().getHumidity() < 85)) {
+            Log.e(LOG_TAG, "Valor temperatura: " + tempCiudad + " | " + "Valor humedad: " + humidity);
+
+            if ((tempCiudad > 18.0) && (tempCiudad < 25.0)) {
+                if ((humidity > 80) && (humidity < 90)) {
                     imagenRecomendacion.setImageResource(R.drawable.tamagochi_happy);
-                    txtRecomendacion.setText(recomendacion[1]);
+                    txtRecomendacion.setText(recomendacion[0]);
                 } else {
                     imagenRecomendacion.setImageResource(R.drawable.tamagochi_normal);
-                    txtRecomendacion.setText(recomendacion[0]);
+                    txtRecomendacion.setText(recomendacion[2]);
                 }
             } else {
-                imagenRecomendacion.setImageResource(R.drawable.tamagochi_sad);
-                txtRecomendacion.setText(recomendacion[2]);
+                if ((humidity > 80) && (humidity < 90)) {
+                    imagenRecomendacion.setImageResource(R.drawable.tamagochi_normal);
+                    txtRecomendacion.setText(recomendacion[1]);
+                }
+                else{
+                    imagenRecomendacion.setImageResource(R.drawable.tamagochi_sad);
+                    txtRecomendacion.setText(recomendacion[3]);
+                }
             }
 
         } catch (InterruptedException | ExecutionException e) {

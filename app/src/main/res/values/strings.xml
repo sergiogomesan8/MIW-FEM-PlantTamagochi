@@ -32,9 +32,12 @@
 
     <!-- Transportar planta -->
 
-    <string name="txtSeleccionado">Tu recomendación para viajar a:</string>
+    <string name="txtSeleccionado">Tu recomendación si estás en: </string>
     <string name="txtCiudad">Ciudad</string>
     <string name="txtComprobar">Comprobar</string>
     <string name="txtselecciona">Selecciona una ciudad</string>
+    <string name="txtregistro">Registrarse</string>
+    <string name="hint_password2">Repetir Contraseña...</string>
+    <string name="field_not_equal">Las contraseñas deben ser igual</string>
 
 </resources>
