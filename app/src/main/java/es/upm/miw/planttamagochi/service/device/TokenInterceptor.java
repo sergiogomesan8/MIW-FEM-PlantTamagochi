@@ -1,4 +1,4 @@
-package es.upm.miw.planttamagochi.device;
+package es.upm.miw.planttamagochi.service.device;
 
 import java.io.IOException;
 

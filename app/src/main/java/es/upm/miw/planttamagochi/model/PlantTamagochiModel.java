@@ -33,25 +33,4 @@ public class PlantTamagochiModel extends ViewModel {
     public void setAuth(FirebaseAuth auth) {
         this.Auth.setValue(auth);
     }
-
-
-
-    /**
-     * @return Devuelve el usuario autenticado en Firebase actual.
-     */
-    public FirebaseUser getCurrentUser() {
-        this.currentUser = Auth.getValue().getCurrentUser();
-        return currentUser;
-    }
-
-
-    /**
-     * Establece el usuario autenticado en Firebase
-     * @param currentUser
-     */
-    public void setCurrentUser(FirebaseUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-
 }

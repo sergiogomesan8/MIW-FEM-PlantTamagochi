@@ -5,16 +5,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -25,8 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.upm.miw.planttamagochi.device.ISpikeRESTAPIService;
-import es.upm.miw.planttamagochi.firebase.Firebase;
+import es.upm.miw.planttamagochi.service.device.ISpikeRESTAPIService;
 import es.upm.miw.planttamagochi.fragments.Perfil;
 import es.upm.miw.planttamagochi.model.PlantTamagochiModel;
 import es.upm.miw.planttamagochi.pojo.AuthorizationBearer;
@@ -49,16 +49,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     static String LOG_TAG = "btb";
-    public static final int NEW_ACTIVITY_REQUEST_CODE = 2022;
 
     private static final String API_LOGIN_POST = "https://thingsboard.cloud/api/auth/"; // Base url to obtain token
     private static final String API_BASE_GET = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/"; // Base url to obtain data
-    //private static final String TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHVkZW50dXBtMjAyMkBnbWFpbC5jb20iLCJ1c2VySWQiOiI4NDg1OTU2MC00NzU2LTExZWQtOTQ1YS1lOWViYTIyYjlkZjYiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjY4ODQ4NTUyLCJleHAiOjE2Njg4NzczNTIsImZpcnN0TmFtZSI6IlN0dWRlbnQiLCJsYXN0TmFtZSI6IlVQTSIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.DLYNMLG9Yo3zHzf1WNTroykSGayDOPHbHkAK9iVyQqhHoWVW-FRx-to2N20ZaAnl4ScNEMCK0a0HrEfgVjvfGA";
     private static final String BEARER = "Bearer ";
     private static final String DEVICE_ID = "cf87adf0-dc76-11ec-b1ed-e5d3f0ce866e";
-    private static final String USER_THB = "studentupm2022@gmail.com";
-    private static final String PASS_THB = "student";
-    private static final Integer ERROR_CODE = 401;
 
     private ISpikeRESTAPIService apiService;
 
@@ -67,7 +62,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     PlantTamagochiModel plantTamagochiVM;
     FirebaseAuth Auth;
     FirebaseDatabase database;
-    Firebase firebase;
+    String firebaseUser;
+    TextView txtsaludo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,25 +71,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         plantTamagochiVM = new ViewModelProvider(this).get(PlantTamagochiModel.class);
-
-        firebase = new Firebase(plantTamagochiVM);
+        Auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
-        //firebaseUser = plantTamagochiVM.getCurrentUser();
 
         this.crearObservadores();
-
         this.postBearerToken();
 
+        firebaseUser = getIntent().getStringExtra("usuario");
+
+        txtsaludo = (TextView) findViewById(R.id.txtsaludo);
+        txtsaludo.setText("Hola, " + firebaseUser);
+
         //Click Listeners
-        findViewById(R.id.buttonVer).setOnClickListener(this);
+        findViewById(R.id.buttonTransportar).setOnClickListener(this);
     }
 
 
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.buttonVer) {
+        if (i == R.id.buttonTransportar) {
             this.getLastTelemetry();
+
+            Intent intent = new Intent(this, TransportarPlantaActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new Observer<FirebaseAuth>() {
                     @Override
                     public void onChanged(FirebaseAuth firebaseAuth) {
-                        marcarAuth(firebase.getFirebaseAuth());
+                        marcarAuth(firebaseAuth);
                     }
                 }
         );
@@ -249,6 +250,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void logOut() {
         Auth.signOut();
-        firebase.setFirebaseAuth(Auth);
     }
+
 }
