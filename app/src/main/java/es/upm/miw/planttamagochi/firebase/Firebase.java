@@ -21,4 +21,13 @@ public class Firebase {
         this.plantTamagochiModel.setAuth(firebaseAuth);
     }
 
+    public FirebaseUser getFirebaseUser(){
+        FirebaseAuth firebaseAuth = this.getFirebaseAuth();
+        return firebaseAuth.getCurrentUser();
+    }
+
+    public void setFirebaseUser(FirebaseUser firebaseUser) {
+        this.plantTamagochiModel.setCurrentUser(firebaseUser);
+    }
+
 }

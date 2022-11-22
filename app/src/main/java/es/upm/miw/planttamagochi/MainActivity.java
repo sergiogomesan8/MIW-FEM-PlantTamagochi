@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -25,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.upm.miw.planttamagochi.device.ISpikeRESTAPIService;
+import es.upm.miw.planttamagochi.service.device.ISpikeRESTAPIService;
 import es.upm.miw.planttamagochi.firebase.Firebase;
 import es.upm.miw.planttamagochi.fragments.Perfil;
 import es.upm.miw.planttamagochi.model.PlantTamagochiModel;
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FirebaseAuth Auth;
     FirebaseDatabase database;
     Firebase firebase;
+    FirebaseUser firebaseUser;
+    TextView txtsaludo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,22 +82,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         firebase = new Firebase(plantTamagochiVM);
         database = FirebaseDatabase.getInstance();
-        //firebaseUser = plantTamagochiVM.getCurrentUser();
 
         this.crearObservadores();
-
         this.postBearerToken();
 
+        firebaseUser = firebase.getFirebaseUser();
+        txtsaludo = (TextView)findViewById(R.id.txtsaludo);
+        txtsaludo.setText("Hola, " + firebaseUser);
+
         //Click Listeners
-        findViewById(R.id.buttonVer).setOnClickListener(this);
+        findViewById(R.id.buttonTransportar).setOnClickListener(this);
     }
 
 
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.buttonVer) {
+        if (i == R.id.buttonTransportar) {
             this.getLastTelemetry();
+            Intent intent = new Intent(this, TransportarPlantaActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -112,6 +120,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void marcarAuth(FirebaseAuth auth) {
         this.Auth = auth;
+    }
+    private void marcarUser(FirebaseUser user){
+        this.firebaseUser = user;
     }
 
 
@@ -251,4 +262,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Auth.signOut();
         firebase.setFirebaseAuth(Auth);
     }
+
 }

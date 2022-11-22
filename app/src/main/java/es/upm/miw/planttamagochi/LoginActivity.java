@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText etUser;
     private EditText etPassword;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,11 +105,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.i(LOG_TAG, "signInWithCredentials:success");
+                            plantTamagochiVM.setAuth(Auth);
 
                             FirebaseUser firebaseUser = Auth.getCurrentUser();
                             Toast.makeText(LoginActivity.this, "Authentication correct: " + firebaseUser,
                                     Toast.LENGTH_SHORT).show();
-                            plantTamagochiVM.setAuth(Auth);
                             startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.

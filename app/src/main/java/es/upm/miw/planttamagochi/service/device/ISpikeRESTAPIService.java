@@ -1,4 +1,4 @@
-package es.upm.miw.planttamagochi.device;
+package es.upm.miw.planttamagochi.service.device;
 
 import es.upm.miw.planttamagochi.pojo.AuthorizationBearer;
 import es.upm.miw.planttamagochi.pojo.Credentials;
