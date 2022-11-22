@@ -25,7 +25,7 @@
     <string name="txtSaludo">Hola, Sergio!</string>
     <string name="txtPregunta">¿Qué quieres hacer hoy?</string>
     <string name="txtTransportarPlanta">Comprueba la ciudad a la que es más conveniente llevar tu planta</string>
-    <string name="txtVerPlanta">Podrás conocer los valores de humedad, temperatura, Co2… de tu planta</string>
+    <string name="txtVerPlanta">Podrás conocer los valores de temperatura y humedad de tu planta</string>
     <string name="btnTransportarPlanta">Transportar Planta</string>
     <string name="btnVerPlanta">Ver Planta</string>
     <string name="CerrarSesion">Cerrar Sesión</string>
@@ -39,5 +39,7 @@
     <string name="txtregistro">Registrarse</string>
     <string name="hint_password2">Repetir Contraseña...</string>
     <string name="field_not_equal">Las contraseñas deben ser igual</string>
+    <string name="txtTemperatura">Temperatura</string>
+    <string name="txtHumedad">Humedad</string>
 
 </resources>

@@ -6,6 +6,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -63,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FirebaseAuth Auth;
     FirebaseDatabase database;
     String firebaseUser;
-    TextView txtsaludo;
+    TextView txtsaludo, txtTemperatura, txtHumedad;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +81,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         firebaseUser = getIntent().getStringExtra("usuario");
 
+        txtTemperatura = (TextView) findViewById(R.id.txtTemperaturaRes);
+        txtHumedad = (TextView) findViewById(R.id.txtHumedadRes);
         txtsaludo = (TextView) findViewById(R.id.txtsaludo);
         txtsaludo.setText("Hola, " + firebaseUser);
 
         //Click Listeners
+        findViewById(R.id.buttonVerPlanta).setOnClickListener(this);
         findViewById(R.id.buttonTransportar).setOnClickListener(this);
     }
 
@@ -90,9 +95,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.buttonTransportar) {
+        if (i == R.id.buttonVerPlanta) {
             this.getLastTelemetry();
-
+        }
+        if (i == R.id.buttonTransportar) {
             Intent intent = new Intent(this, TransportarPlantaActivity.class);
             startActivity(intent);
         }
@@ -162,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         call.enqueue(new Callback<AuthorizationBearer>() {
             @Override
             public void onResponse(Call<AuthorizationBearer> call, Response<AuthorizationBearer> response) {
-                Toast.makeText(MainActivity.this, "Data posted to API", Toast.LENGTH_SHORT).show();
                 AuthorizationBearer responseFromAPI = response.body();
                 String responseString = "Response postBearerToken() Code : " + response.code() + "\nToken : " + responseFromAPI.getToken() + "\n" + "RefreshToken : " + responseFromAPI.getRefreshToken();
                 Log.i(LOG_TAG, " response: " + responseString);
@@ -179,8 +184,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void getLastTelemetry() {
-
-        this.postBearerToken();
 
         //https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/{{deviceId}}/values/timeseries?keys=co2&useStrictDataTypes=false
         String keys = "co2,humidity,light,soilTemp1,soilTemp2,temperature";
@@ -223,6 +226,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     List<SoilTemp1> lST1 = lm.getSoilTemp1();
                     List<SoilTemp2> lST2 = lm.getSoilTemp2();
                     List<Temperature> lTem = lm.getTemperature();
+
+                    Integer tempPlant = Integer.parseInt(lTem.get(0).getValue());
+                    Integer humidity = Integer.parseInt(lHum.get(0).getValue());
+                    txtTemperatura.setText(tempPlant.toString());
+                    txtHumedad.setText(humidity.toString());
+                    Log.i("temps", " TEMP - HUMEDAD: " + tempPlant + " - " + humidity);
+
+                    if ((tempPlant > 18) && (tempPlant < 25)) {
+                        txtTemperatura.setTextColor(Color.rgb(50,205,50));
+                    } else {
+                        txtTemperatura.setTextColor(Color.rgb(255,0,0));
+                    }
+                    if ((humidity > 80) && (humidity < 90)) {
+                        txtHumedad.setTextColor(Color.rgb(50,205,50));
+                    } else {
+                        txtHumedad.setTextColor(Color.rgb(255,0,0));
+                    }
 
                     DatabaseReference myRef = database.getReference("keys_api_plant" + " | " + dateFormat.format(date) + " | " + hourFormat.format(date));
                     Map<String, Object> m = new HashMap<>();
